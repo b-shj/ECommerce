@@ -30,6 +30,23 @@ services:
       timeout: 5s
       retries: 5
 
+  orderdb:
+    container_name: orderdb
+    environment:
+      SA_PASSWORD: "Sahaja1234567"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Sahaja1234567' -Q 'select 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    command: >
+     /bin/bash -c "apt-get update && apt-get install -y mssql-tools unixodbc-dev && /opt/mssql/bin/sqlservr"
+
+
   catalog.api:
     container_name: catalog.api
     environment:
@@ -66,7 +83,19 @@ services:
          condition: service_healthy
     ports:
       - "8002:8080"
-  
+
+  ordering.api:
+    container_name: ordering.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=Sahaja1234567;TrustServerCertificate=True"     
+    depends_on:
+      - orderdb      
+    ports:
+      - "8003:8080" 
+    command: >
+     /bin/sh -c "dotnet ef database update -p ../Ordering.Infrastructure -s ../Ordering.API && dotnet Ordering.API.dll"
+
   pgadmin:
     container_name: pgadmin
     environment:
@@ -87,3 +116,4 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+  
