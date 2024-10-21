@@ -8,11 +8,6 @@ namespace Basket.Application.Commands
     {
         public string UserName { get; set; }
         public List<ShoppingCartItem> Items { get; set; }
-        public CreateShoppingCartCommand()
-        {
-
-        }
-
         public CreateShoppingCartCommand(string username, List<ShoppingCartItem> items)
         {
             UserName = username;

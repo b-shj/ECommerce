@@ -1,6 +1,4 @@
-﻿using Basket.Application.Commands;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Basket.API.Controllers
 {
