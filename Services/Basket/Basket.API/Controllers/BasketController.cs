@@ -67,6 +67,7 @@ namespace Basket.API.Controllers
             }
             var eventMsg = BasketMapper.Mapper.Map<BasketCheckoutEvent>(basketCheckout);
             eventMsg.TotalPrice = basket.TotalPrice;
+            _logger.LogInformation($"Basket Started to Publish for {basket.UserName}");
             await _publishEndpoint.Publish(eventMsg);
             _logger.LogInformation($"Basket Published for {basket.UserName}");
 
