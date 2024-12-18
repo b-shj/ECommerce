@@ -23,22 +23,21 @@ namespace Catalog.Infrastructure.Repositories
             var filter = builder.Empty;
             if (!string.IsNullOrEmpty(catalogSpecParams.Search))
             {
-                filter = filter & builder.Where(p => p.Name.ToLower() == catalogSpecParams.Search.ToLower());
+                filter = filter & builder.Where(p => p.Name.ToLower().Contains(catalogSpecParams.Search.ToLower()));
             }
-            if(!string.IsNullOrEmpty(catalogSpecParams.BrandId))
+            if (!string.IsNullOrEmpty(catalogSpecParams.BrandId))
             {
-                filter = filter & builder.Eq(p => p.Id, catalogSpecParams.BrandId);
+                var brandFilter = builder.Eq(p => p.Brand.Id, catalogSpecParams.BrandId);
+                filter &= brandFilter;
             }
-            if(!string.IsNullOrEmpty(catalogSpecParams.TypeId))
+            if (!string.IsNullOrEmpty(catalogSpecParams.TypeId))
             {
-                filter = filter & builder.Eq(p => p.Id, catalogSpecParams.TypeId);
+                var TypeFilter = builder.Eq(p => p.Type.Id, catalogSpecParams.TypeId);
+                filter &= TypeFilter;
             }
-
             var totalItems = await _context.Products.CountDocumentsAsync(filter);
             var data = await Datafilter(catalogSpecParams, filter);
-
-            return new Pagination<Product>
-            (
+            return new Pagination<Product>(
                 catalogSpecParams.PageIndex,
                 catalogSpecParams.PageSize,
                 (int)totalItems,
